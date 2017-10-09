@@ -2,6 +2,10 @@ package main
 
 import (
 	"fmt"
+	"log"
+	"os/exec"
+	"strconv"
+	"strings"
 
 	"github.com/spf13/cobra"
 )
@@ -16,7 +20,15 @@ func main() {
 		},
 	}
 
-	cmdInvoke := &cobra.Command{}
+	cmdInvoke := &cobra.Command{
+		Use:   "invoke",
+		Short: "Invoke a daemon",
+		Long:  "Invoke a daemon",
+		Run: func(cmd *cobra.Command, args []string) {
+			fmt.Println("invocation", args)
+			runCommand(args)
+		},
+	}
 
 	cmdEnumerate := &cobra.Command{}
 
@@ -29,4 +41,18 @@ func main() {
 	rootCmd.AddCommand(cmdBanish)
 	rootCmd.Execute()
 
+}
+
+func runCommand(args []string) {
+	str := strings.Join(args, " ")
+	out, err := exec.Command("sh", "-c", str).Output()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	i, err := strconv.ParseFloat(strings.TrimSpace(string(out[:])), 64)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(i)
 }
