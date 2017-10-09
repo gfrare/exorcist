@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	var cmdFake = &cobra.Command{
+	cmdFake := &cobra.Command{
 		Use:   "fake",
 		Short: "Print fake message",
 		Long:  "A fake for a day",
@@ -16,8 +16,17 @@ func main() {
 		},
 	}
 
-	var rootCmd = &cobra.Command{Use: "exorcist"}
+	cmdInvoke := &cobra.Command{}
+
+	cmdEnumerate := &cobra.Command{}
+
+	cmdBanish := &cobra.Command{}
+
+	rootCmd := &cobra.Command{Use: "exorcist"}
 	rootCmd.AddCommand(cmdFake)
+	rootCmd.AddCommand(cmdInvoke)
+	rootCmd.AddCommand(cmdEnumerate)
+	rootCmd.AddCommand(cmdBanish)
 	rootCmd.Execute()
 
 }
