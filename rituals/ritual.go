@@ -32,6 +32,11 @@ func RemoveRitual(metric string) {
 	writeGrimoire(grimoire)
 }
 
+// ListRituals public functions
+func ListRituals() map[string]Ritual {
+	return readGrimoire().Rituals
+}
+
 func readGrimoire() Grimoire {
 	b, err := ioutil.ReadFile("grimoire.json")
 	if err != nil {

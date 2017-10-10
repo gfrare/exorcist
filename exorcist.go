@@ -2,16 +2,19 @@ package main
 
 import (
 	"fmt"
+	"log"
+	"net/http"
 	"strings"
 
 	"github.com/gfrare/exorcist/rituals"
+	"github.com/gfrare/exorcist/salms"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/spf13/cobra"
-	// "github.com/prometheus/client_golang/prometheus"
-	// "github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 func main() {
 	var name string
+	var port string
 
 	cmdExorcism := &cobra.Command{
 		Use:   "exorcism",
@@ -19,7 +22,18 @@ func main() {
 		Long:  "Begin an exorcism",
 		Run: func(cmd *cobra.Command, args []string) {
 			fmt.Println("exorcism", args)
-			initServer(args)
+		},
+	}
+
+	cmdSummon := &cobra.Command{
+		Use:   "summon",
+		Short: "Summon the exorcist",
+		Long:  "Summon the exorcist",
+		Run: func(cmd *cobra.Command, args []string) {
+			fmt.Println("summon", args)
+			fmt.Println("flag", port)
+			salms.InitAndExecuteMetrics()
+			initServer(port)
 		},
 	}
 
@@ -54,45 +68,26 @@ func main() {
 	}
 
 	cmdInvoke.Flags().StringVarP(&name, "name", "n", "default", "give a name to invocation")
+	cmdSummon.Flags().StringVarP(&port, "port", "p", "8080", "give a port to exorcist")
 
 	rootCmd := &cobra.Command{Use: "exorcist"}
 	rootCmd.AddCommand(cmdExorcism)
+	rootCmd.AddCommand(cmdSummon)
 	rootCmd.AddCommand(cmdInvoke)
 	rootCmd.AddCommand(cmdRecite)
 	rootCmd.AddCommand(cmdBanish)
 	rootCmd.Execute()
-
-	// Expose the registered metrics via HTTP.
-	// http.Handle("/metrics", promhttp.Handler())
-	// log.Fatal(http.ListenAndServe(*addr, nil))
 }
 
-func initServer(args []string) {
-	// print del file al cambiamento
+func initServer(port string) {
+	// Expose the registered metrics via HTTP.
+	host := ":" + port
+	// http.Handle("/metrics", handlers.LoggingHandler(os.Stdout, promhttp.Handler()))
+	http.Handle("/metrics", promhttp.Handler())
+	log.Fatal(http.ListenAndServe(host, nil))
 }
 
 func invoke(metric string, command string, timer uint8) {
 	ritual := rituals.Ritual{Command: command, Timer: timer}
 	rituals.AddRitual(metric, ritual)
 }
-
-// func runCommand(args []string) {
-// 	str := strings.Join(args, " ")
-
-// 	go func() {
-// 		for {
-// 			out, err := exec.Command("sh", "-c", str).Output()
-// 			if err != nil {
-// 				log.Fatal(err)
-// 			}
-
-// 			i, err := strconv.ParseFloat(strings.TrimSpace(string(out[:])), 64)
-// 			if err != nil {
-// 				log.Fatal(err)
-// 			}
-// 			fmt.Println(i)
-
-// 			time.Sleep(2 * time.Second)
-// 		}
-// 	}()
-// }
