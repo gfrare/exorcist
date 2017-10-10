@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/gfrare/exorcist/god_eye"
 	"github.com/gfrare/exorcist/rituals"
-	"github.com/gfrare/exorcist/salms"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/spf13/cobra"
 )
@@ -32,7 +32,9 @@ func main() {
 		Run: func(cmd *cobra.Command, args []string) {
 			fmt.Println("summon", args)
 			fmt.Println("flag", port)
-			salms.InitAndExecuteMetrics()
+
+			go godEye.Watch()
+
 			initServer(port)
 		},
 	}
