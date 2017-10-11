@@ -1,6 +1,8 @@
 package salms
 
 import (
+	"crypto/sha512"
+	"encoding/hex"
 	"fmt"
 	"log"
 	"os/exec"
@@ -30,16 +32,21 @@ func InitAndExecuteMetrics() {
 
 	newRituals := markNewRituals(ritualsList)
 	for metric, ritual := range newRituals {
-		sign := generateOriginalSin(metric, ritual)
+		sin := generateOriginalSin(metric, ritual)
 		gauge := registerMetric(metric)
-		go executeMetric(gauge, ritual, sign)
+		go executeMetric(gauge, ritual, sin)
 	}
 
 	currentRituals = ritualsList
 }
 
 func generateOriginalSin(metric string, ritual rituals.Ritual) string {
-	return metric + ritual.Command + strconv.Itoa(int(ritual.Timer))
+	seed := metric + ritual.Command + strconv.Itoa(int(ritual.Timer))
+	log.Print("seed: " + seed)
+	hasher := sha512.New512_256()
+	hasher.Write([]byte(seed))
+	hash := hex.EncodeToString(hasher.Sum(nil))
+	return hash
 }
 
 func markRemovableRituals(ritualList map[string]rituals.Ritual) []string {
