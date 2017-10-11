@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"strings"
 
 	"github.com/gfrare/exorcist/god_eye"
 	"github.com/gfrare/exorcist/rituals"
@@ -14,6 +13,8 @@ import (
 
 func main() {
 	var name string
+	var command string
+	var timer *uint8
 	var port string
 
 	cmdExorcism := &cobra.Command{
@@ -44,10 +45,19 @@ func main() {
 		Short: "Invoke a daemon",
 		Long:  "Invoke a daemon",
 		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Println("invocation", args)
-			fmt.Println("flag", name)
-			command := strings.Join(args, " ")
-			invoke(name, command, 2)
+			fmt.Println("invocation:", args)
+			fmt.Println("name:", name)
+			fmt.Println("command:", command)
+			fmt.Println("timer:", *timer)
+			invoke(name, command, *timer)
+		},
+		PersistentPreRun: func(cmd *cobra.Command, args []string) {
+			if name == "" {
+				log.Fatal("Metric name is mandatory")
+			}
+			if command == "" {
+				log.Fatal("Metric command is mandatory")
+			}
 		},
 	}
 
@@ -69,7 +79,12 @@ func main() {
 		},
 	}
 
-	cmdInvoke.Flags().StringVarP(&name, "name", "n", "default", "give a name to invocation")
+	cmdInvoke.Flags().StringVarP(&name, "name", "n", "", "give a name to invocation")
+	cmdInvoke.MarkPersistentFlagRequired("name")
+	cmdInvoke.Flags().StringVarP(&command, "command", "c", "", "command to execute")
+	cmdInvoke.MarkPersistentFlagRequired("command")
+	timer = cmdInvoke.Flags().Uint8P("timer", "t", 5, "sleep between command execution")
+
 	cmdSummon.Flags().StringVarP(&port, "port", "p", "8080", "give a port to exorcist")
 
 	rootCmd := &cobra.Command{Use: "exorcist"}
@@ -81,10 +96,9 @@ func main() {
 	rootCmd.Execute()
 }
 
+// Expose the registered metrics via HTTP
 func initServer(port string) {
-	// Expose the registered metrics via HTTP.
 	host := ":" + port
-	// http.Handle("/metrics", handlers.LoggingHandler(os.Stdout, promhttp.Handler()))
 	http.Handle("/metrics", promhttp.Handler())
 	log.Fatal(http.ListenAndServe(host, nil))
 }
