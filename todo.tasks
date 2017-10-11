@@ -1,7 +1,7 @@
 ☐ implements file watch for grimoure
     ✔ first release @done (2017-10-10 15:20:23)
-☐ compare between grimoure structs
-☐ unregister gauce after grimoure file update
+✔ compare between grimoure structs @done (2017-10-11 10:41:17)
+✔ unregister gauce after grimoure file update @done (2017-10-11 10:41:24)
 ☐ banish ritual from grimoure
 ☐ recite the list of rituals in grimoure
 ☐ use channel to send signal to kill gauce
