@@ -58,7 +58,6 @@ func markRemovableRituals(ritualList map[string]rituals.Ritual) []string {
 			removableRituals = append(removableRituals, k)
 		}
 	}
-	fmt.Println("REMOVABLE-RITUALS", removableRituals)
 	return removableRituals
 }
 
@@ -78,7 +77,6 @@ func markNewRituals(ritualList map[string]rituals.Ritual) map[string]rituals.Rit
 			additionalRituals[k] = v
 		}
 	}
-	fmt.Println("NEW-RITUALS", additionalRituals)
 	return additionalRituals
 }
 
