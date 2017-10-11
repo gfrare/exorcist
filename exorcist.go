@@ -17,15 +17,6 @@ func main() {
 	var timer *uint8
 	var port string
 
-	cmdExorcism := &cobra.Command{
-		Use:   "exorcism",
-		Short: "Begin an exorcism",
-		Long:  "Begin an exorcism",
-		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Println("exorcism", args)
-		},
-	}
-
 	cmdSummon := &cobra.Command{
 		Use:   "summon",
 		Short: "Summon the exorcist",
@@ -88,7 +79,6 @@ func main() {
 	cmdSummon.Flags().StringVarP(&port, "port", "p", "8080", "give a port to exorcist")
 
 	rootCmd := &cobra.Command{Use: "exorcist"}
-	rootCmd.AddCommand(cmdExorcism)
 	rootCmd.AddCommand(cmdSummon)
 	rootCmd.AddCommand(cmdInvoke)
 	rootCmd.AddCommand(cmdRecite)
