@@ -21,3 +21,6 @@ debug
 
 # golang dep vendor
 vendor/
+
+# configuration files
+grimoire.json
