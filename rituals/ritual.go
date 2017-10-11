@@ -5,7 +5,11 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"os"
 )
+
+// ConfigurationFile is the name of the file that contains the program configuration
+const ConfigurationFile = "grimoire.json"
 
 // Grimoire struct
 type Grimoire struct {
@@ -38,15 +42,24 @@ func ListRituals() map[string]Ritual {
 }
 
 func readGrimoire() Grimoire {
-	b, err := ioutil.ReadFile("grimoire.json")
+	// Check if the configuration file exists. If it doesn't create it
+	if _, err := os.Stat(ConfigurationFile); os.IsNotExist(err) {
+		file, err := os.Create(ConfigurationFile)
+		if err != nil {
+			log.Fatal(err)
+		}
+		file.Close()
+	}
+
+	b, err := ioutil.ReadFile(ConfigurationFile)
 	if err != nil {
-		log.Fatal("FATAL1\n", err)
+		log.Fatal(err)
 	}
 	var grimoire Grimoire
 	if len(b) == 0 {
 		grimoire = Grimoire{}
 	} else if err := json.Unmarshal(b, &grimoire); err != nil {
-		log.Fatal("FATAL2\n", err)
+		log.Fatal(err)
 	}
 
 	if grimoire.Rituals == nil {
@@ -62,7 +75,7 @@ func writeGrimoire(grimoire Grimoire) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	if err := ioutil.WriteFile("grimoire.json", b, 0777); err != nil {
+	if err := ioutil.WriteFile(ConfigurationFile, b, 0666); err != nil {
 		log.Fatal(err)
 	}
 }

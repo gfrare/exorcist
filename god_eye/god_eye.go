@@ -3,6 +3,8 @@ package godEye
 import (
 	"log"
 
+	"github.com/gfrare/exorcist/rituals"
+
 	"github.com/fsnotify/fsnotify"
 	"github.com/gfrare/exorcist/salms"
 )
@@ -34,7 +36,7 @@ func Watch() {
 		}
 	}()
 
-	err = watcher.Add("grimoire.json")
+	err = watcher.Add(rituals.ConfigurationFile)
 	if err != nil {
 		log.Fatal(err)
 	}
