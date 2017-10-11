@@ -30,25 +30,16 @@ func InitAndExecuteMetrics() {
 
 	newRituals := markNewRituals(ritualsList)
 	for metric, ritual := range newRituals {
+		sign := generateOriginalSin(metric, ritual)
 		gauge := registerMetric(metric)
-		go executeMetric(gauge, ritual)
+		go executeMetric(gauge, ritual, sign)
 	}
 
 	currentRituals = ritualsList
+}
 
-	// var ritualsList map[string]rituals.Ritual
-
-	// if currentRituals == nil {
-	// 	ritualsList = rituals.ListRituals()
-	// } else {
-	// 	// TODO: compare
-	// 	// ritualsList = rituals.ListRituals()
-	// }
-	// for metric, ritual := range ritualsList {
-	// 	gauge := initMetric(metric)
-	// 	go executeMetric(gauge, ritual)
-	// }
-	// currentRituals = ritualsList
+func generateOriginalSin(metric string, ritual rituals.Ritual) string {
+	return metric + ritual.Command + strconv.Itoa(int(ritual.Timer))
 }
 
 func markRemovableRituals(ritualList map[string]rituals.Ritual) []string {
@@ -106,7 +97,7 @@ func unregisterMetric(metric string) {
 	prometheus.Unregister(gauge)
 }
 
-func executeMetric(gauge prometheus.Gauge, ritual rituals.Ritual) {
+func executeMetric(gauge prometheus.Gauge, ritual rituals.Ritual, sin string) {
 	gauge.Set(0)
 
 	for {
