@@ -16,9 +16,11 @@ import (
 
 var currentRituals map[string]rituals.Ritual
 var currentGauges map[string]prometheus.Gauge
+var slaughterChannels map[string]chan bool
 
 func init() {
 	currentGauges = make(map[string]prometheus.Gauge)
+	slaughterChannels = make(map[string]chan bool)
 }
 
 // InitAndExecuteMetrics public function
@@ -27,6 +29,12 @@ func InitAndExecuteMetrics() {
 
 	removableRituals := markRemovableRituals(ritualsList)
 	for _, metric := range removableRituals {
+		ritual := currentRituals[metric]
+		sin := generateOriginalSin(metric, ritual)
+		slaughterChannel := slaughterChannels[sin]
+		slaughterChannel <- true
+		close(slaughterChannel)
+		delete(slaughterChannels, sin)
 		unregisterMetric(metric)
 	}
 
@@ -34,7 +42,9 @@ func InitAndExecuteMetrics() {
 	for metric, ritual := range newRituals {
 		sin := generateOriginalSin(metric, ritual)
 		gauge := registerMetric(metric)
-		go executeMetric(gauge, ritual, sin)
+		slaughterChannel := make(chan bool)
+		slaughterChannels[sin] = slaughterChannel
+		go executeMetric(gauge, ritual, slaughterChannel)
 	}
 
 	currentRituals = ritualsList
@@ -42,7 +52,6 @@ func InitAndExecuteMetrics() {
 
 func generateOriginalSin(metric string, ritual rituals.Ritual) string {
 	seed := metric + ritual.Command + strconv.Itoa(int(ritual.Timer))
-	log.Print("seed: " + seed)
 	hasher := sha512.New512_256()
 	hasher.Write([]byte(seed))
 	hash := hex.EncodeToString(hasher.Sum(nil))
@@ -99,13 +108,16 @@ func registerMetric(metric string) prometheus.Gauge {
 
 func unregisterMetric(metric string) {
 	gauge := currentGauges[metric]
+	delete(currentGauges, metric)
 	prometheus.Unregister(gauge)
 }
 
-func executeMetric(gauge prometheus.Gauge, ritual rituals.Ritual, sin string) {
+func executeMetric(gauge prometheus.Gauge, ritual rituals.Ritual, slaughterChannel chan (bool)) {
 	gauge.Set(0)
+	run := true
+	waitTime := time.Duration(ritual.Timer) * time.Second
 
-	for {
+	for run {
 		output, err := exec.Command("sh", "-c", ritual.Command).Output()
 		if err != nil {
 			log.Fatal(err)
@@ -118,6 +130,10 @@ func executeMetric(gauge prometheus.Gauge, ritual rituals.Ritual, sin string) {
 		gauge.Set(i)
 		fmt.Println(i)
 
-		time.Sleep(time.Duration(ritual.Timer) * time.Second)
+		select {
+		case <-slaughterChannel:
+			run = false
+		case <-time.After(waitTime):
+		}
 	}
 }
