@@ -9,3 +9,4 @@
 ☐ If the grimoire is missing log a fatal error
 	☐ Implement a flag to override the fatal error and create instead an empty grimoire
 	☐ The invocation command should always fail if the grimoire is missing
+☐ Refactor code to associate functions to structs (i.e. introduce methods)
