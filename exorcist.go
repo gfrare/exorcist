@@ -67,6 +67,12 @@ func main() {
 		Long:  "Banish a daemon",
 		Run: func(cmd *cobra.Command, args []string) {
 			fmt.Println("banish", args)
+			rituals.RemoveRitual(name)
+		},
+		PersistentPreRun: func(cmd *cobra.Command, args []string) {
+			if name == "" {
+				log.Fatal("Metric name is mandatory")
+			}
 		},
 	}
 
@@ -77,6 +83,8 @@ func main() {
 	timer = cmdInvoke.Flags().Uint8P("timer", "t", 5, "sleep between command execution")
 
 	cmdSummon.Flags().StringVarP(&port, "port", "p", "8080", "give a port to exorcist")
+
+	cmdBanish.Flags().StringVarP(&name, "name", "n", "", "give a name to invocation")
 
 	rootCmd := &cobra.Command{Use: "exorcist"}
 	rootCmd.AddCommand(cmdSummon)

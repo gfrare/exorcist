@@ -32,8 +32,10 @@ func AddRitual(metric string, ritual Ritual) {
 // RemoveRitual public function
 func RemoveRitual(metric string) {
 	grimoire := readGrimoire()
-	delete(grimoire.Rituals, metric)
-	writeGrimoire(grimoire)
+	if _, exists := grimoire.Rituals[metric]; exists {
+		delete(grimoire.Rituals, metric)
+		writeGrimoire(grimoire)
+	}
 }
 
 // ListRituals public functions
