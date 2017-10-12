@@ -26,10 +26,22 @@
   version = "v1.0"
 
 [[projects]]
+  name = "github.com/mattn/go-runewidth"
+  packages = ["."]
+  revision = "9e777a8366cce605130a531d2cd6363d07ad7317"
+  version = "v0.0.2"
+
+[[projects]]
   name = "github.com/matttproud/golang_protobuf_extensions"
   packages = ["pbutil"]
   revision = "3247c84500bff8d9fb6d579d800f20b3e091582c"
   version = "v1.0.0"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/olekukonko/tablewriter"
+  packages = ["."]
+  revision = "a7a4c189eb47ed33ce7b35f2880070a0c82a67d4"
 
 [[projects]]
   name = "github.com/prometheus/client_golang"
@@ -76,6 +88,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "72058509a784f889cef2a563a04832abce26f1fbf50fd3b0536a0fc7c88b84bc"
+  inputs-digest = "bb01a2ed73799255716c7523f4c1b38de1ab29d945a54711508ae269110a4436"
   solver-name = "gps-cdcl"
   solver-version = 1
