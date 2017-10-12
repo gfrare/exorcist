@@ -25,9 +25,6 @@ func main() {
 		Short: "Summon the exorcist",
 		Long:  "Summon the exorcist",
 		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Println("summon", args)
-			fmt.Println("flag", port)
-
 			go godEye.Watch()
 
 			initServer(port)
@@ -115,8 +112,10 @@ func main() {
 
 // Expose the registered metrics via HTTP
 func initServer(port string) {
+	endpoint := "/metrics"
+	log.Printf("Starting exorcist on port %s, endpoint: %s", port, endpoint)
 	host := ":" + port
-	http.Handle("/metrics", promhttp.Handler())
+	http.Handle(endpoint, promhttp.Handler())
 	log.Fatal(http.ListenAndServe(host, nil))
 }
 
