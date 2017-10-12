@@ -4,9 +4,12 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
+	"strconv"
 
 	"github.com/gfrare/exorcist/god_eye"
 	"github.com/gfrare/exorcist/rituals"
+	"github.com/olekukonko/tablewriter"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/spf13/cobra"
 )
@@ -57,7 +60,23 @@ func main() {
 		Short: "Recite a salm",
 		Long:  "Recite a salm",
 		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Println("recite", args)
+			table := tablewriter.NewWriter(os.Stdout)
+			table.SetHeader([]string{"Metric", "Command", "Timer"})
+			table.SetBorder(false)
+			table.SetHeaderColor(tablewriter.Color(tablewriter.FgRedColor),
+				tablewriter.Color(tablewriter.FgGreenColor),
+				tablewriter.Color(tablewriter.FgBlueColor))
+			table.SetColumnColor(tablewriter.Color(tablewriter.FgRedColor),
+				tablewriter.Color(tablewriter.FgGreenColor),
+				tablewriter.Color(tablewriter.FgBlueColor))
+			table.SetColumnAlignment([]int{tablewriter.ALIGN_DEFAULT, tablewriter.ALIGN_DEFAULT,
+				tablewriter.ALIGN_RIGHT})
+
+			for metric, ritual := range rituals.ListRituals() {
+				row := []string{metric, ritual.Command, strconv.Itoa(int(ritual.Timer))}
+				table.Append(row)
+			}
+			table.Render()
 		},
 	}
 
