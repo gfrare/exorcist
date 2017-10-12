@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -36,10 +35,7 @@ func main() {
 		Short: "Invoke a daemon",
 		Long:  "Invoke a daemon",
 		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Println("invocation:", args)
-			fmt.Println("name:", name)
-			fmt.Println("command:", command)
-			fmt.Println("timer:", *timer)
+			log.Printf("Invoking ritual \"%s\" with command \"%s\" and timer %d", name, command, *timer)
 			invoke(name, command, *timer)
 		},
 		PersistentPreRun: func(cmd *cobra.Command, args []string) {
@@ -82,7 +78,7 @@ func main() {
 		Short: "Banish a daemon",
 		Long:  "Banish a daemon",
 		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Println("banish", args)
+			log.Printf("Banishing ritual \"%s\"", name)
 			rituals.RemoveRitual(name)
 		},
 		PersistentPreRun: func(cmd *cobra.Command, args []string) {

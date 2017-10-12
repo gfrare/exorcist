@@ -2,7 +2,6 @@ package rituals
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
@@ -73,7 +72,7 @@ func readGrimoire() Grimoire {
 
 func writeGrimoire(grimoire Grimoire) {
 	b, err := json.MarshalIndent(grimoire, "", "  ")
-	fmt.Println(string(b[:]))
+	log.Printf("Grimoire: %s", string(b[:]))
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -26,7 +26,7 @@ func Watch() {
 			case event := <-watcher.Events:
 				log.Println("event", event)
 				if event.Op&fsnotify.Write == fsnotify.Write {
-					log.Println("modified file:", event.Name)
+					log.Println("Grimoire has been modified")
 
 					salms.InitAndExecuteMetrics()
 				}

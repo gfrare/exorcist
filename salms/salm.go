@@ -3,7 +3,6 @@ package salms
 import (
 	"crypto/sha512"
 	"encoding/hex"
-	"fmt"
 	"log"
 	"os/exec"
 	"strconv"
@@ -43,7 +42,7 @@ func InitAndExecuteMetrics() {
 		gauge := registerMetric(metric)
 		slaughterChannel := make(chan bool)
 		slaughterChannels[sin] = slaughterChannel
-		go executeMetric(gauge, ritual, slaughterChannel)
+		go executeMetric(gauge, metric, ritual, slaughterChannel)
 	}
 
 	currentRituals = ritualsList
@@ -105,7 +104,7 @@ func unregisterMetric(metric string) {
 	prometheus.Unregister(gauge)
 }
 
-func executeMetric(gauge prometheus.Gauge, ritual rituals.Ritual, slaughterChannel chan (bool)) {
+func executeMetric(gauge prometheus.Gauge, metric string, ritual rituals.Ritual, slaughterChannel chan (bool)) {
 	gauge.Set(0)
 	run := true
 	waitTime := time.Duration(ritual.Timer) * time.Second
@@ -116,12 +115,12 @@ func executeMetric(gauge prometheus.Gauge, ritual rituals.Ritual, slaughterChann
 			log.Fatal(err)
 		}
 
-		i, err := strconv.ParseFloat(strings.TrimSpace(string(output[:])), 64)
+		value, err := strconv.ParseFloat(strings.TrimSpace(string(output[:])), 64)
 		if err != nil {
 			log.Fatal(err)
 		}
-		gauge.Set(i)
-		fmt.Println(i)
+		gauge.Set(value)
+		log.Printf("Ritual \"%s\", value: %f", metric, value)
 
 		select {
 		case <-slaughterChannel:
