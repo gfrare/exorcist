@@ -1,7 +1,11 @@
-☐ implements file watch for grimoure
+✔ implements file watch for grimoure @done (October 12th 2017, 10:25)
     ✔ first release @done (2017-10-10 15:20:23)
 ✔ compare between grimoure structs @done (2017-10-11 10:41:17)
 ✔ unregister gauce after grimoure file update @done (2017-10-11 10:41:24)
-☐ banish ritual from grimoure
-☐ recite the list of rituals in grimoure
-☐ use channel to send signal to kill gauce
+✔ banish ritual from grimoure @done (October 12th 2017, 10:26)
+✔ recite the list of rituals in grimoure @done (October 12th 2017, 10:26)
+✔ use channel to send signal to kill gauce @done (October 12th 2017, 10:26)
+☐ Implement pages so that each exorcist only uses a part of the entire grimoire
+☐ If the grimoire is missing log a fatal error
+	☐ Implement a flag to override the fatal error and create instead an empty grimoire
+	☐ The invocation command should always fail if the grimoire is missing
