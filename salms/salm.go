@@ -28,8 +28,7 @@ func InitAndExecuteMetrics() {
 	ritualsList := rituals.ListRituals()
 
 	removableRituals := markRemovableRituals(ritualsList)
-	for _, metric := range removableRituals {
-		ritual := currentRituals[metric]
+	for metric, ritual := range removableRituals {
 		sin := generateOriginalSin(metric, ritual)
 		slaughterChannel := slaughterChannels[sin]
 		slaughterChannel <- true
@@ -58,23 +57,12 @@ func generateOriginalSin(metric string, ritual rituals.Ritual) string {
 	return hash
 }
 
-func markRemovableRituals(ritualList map[string]rituals.Ritual) []string {
+func markRemovableRituals(ritualList map[string]rituals.Ritual) map[string]rituals.Ritual {
 	if currentRituals == nil || len(currentRituals) == 0 {
-		return make([]string, 0)
+		return make(map[string]rituals.Ritual)
 	}
-	removableRituals := make([]string, 0, 100)
 
-	for k, v := range currentRituals {
-		ritual, ok := ritualList[k]
-		if ok == true {
-			if ritual != v {
-				removableRituals = append(removableRituals, k)
-			}
-		} else {
-			removableRituals = append(removableRituals, k)
-		}
-	}
-	return removableRituals
+	return markDifferentRituals(currentRituals, ritualList)
 }
 
 func markNewRituals(ritualList map[string]rituals.Ritual) map[string]rituals.Ritual {
@@ -82,18 +70,23 @@ func markNewRituals(ritualList map[string]rituals.Ritual) map[string]rituals.Rit
 		return ritualList
 	}
 
-	additionalRituals := make(map[string]rituals.Ritual)
-	for k, v := range ritualList {
-		ritual, ok := currentRituals[k]
+	return markDifferentRituals(ritualList, currentRituals)
+}
+
+func markDifferentRituals(firstMap map[string]rituals.Ritual, secondMap map[string]rituals.Ritual) map[string]rituals.Ritual {
+	returnMap := make(map[string]rituals.Ritual)
+
+	for k, v := range firstMap {
+		ritual, ok := secondMap[k]
 		if ok == true {
 			if ritual != v {
-				additionalRituals[k] = v
+				returnMap[k] = v
 			}
 		} else {
-			additionalRituals[k] = v
+			returnMap[k] = v
 		}
 	}
-	return additionalRituals
+	return returnMap
 }
 
 func registerMetric(metric string) prometheus.Gauge {
