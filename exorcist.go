@@ -14,6 +14,7 @@ import (
 )
 
 func main() {
+	var page string
 	var name string
 	var command string
 	var timer *uint8
@@ -24,6 +25,7 @@ func main() {
 		Short: "Summon the exorcist",
 		Long:  "Summon the exorcist",
 		Run: func(cmd *cobra.Command, args []string) {
+			log.Printf("Summon exorcist reading page \"%s\"", page)
 			go godEye.Watch()
 
 			initServer(port)
@@ -35,8 +37,8 @@ func main() {
 		Short: "Invoke a daemon",
 		Long:  "Invoke a daemon",
 		Run: func(cmd *cobra.Command, args []string) {
-			log.Printf("Invoking ritual \"%s\" with command \"%s\" and timer %d", name, command, *timer)
-			invoke(name, command, *timer)
+			log.Printf("Invoking ritual \"%s\" from page \"%s\" with command \"%s\" and timer %d", name, page, command, *timer)
+			invoke(page, name, command, *timer)
 		},
 		PersistentPreRun: func(cmd *cobra.Command, args []string) {
 			if name == "" {
@@ -88,6 +90,9 @@ func main() {
 		},
 	}
 
+	cmdSummon.Flags().StringVarP(&page, "page", "", "", "choose a page")
+
+	cmdInvoke.Flags().StringVarP(&page, "page", "", "", "choose a page")
 	cmdInvoke.Flags().StringVarP(&name, "name", "n", "", "give a name to invocation")
 	cmdInvoke.MarkPersistentFlagRequired("name")
 	cmdInvoke.Flags().StringVarP(&command, "command", "c", "", "command to execute")
@@ -106,7 +111,6 @@ func main() {
 	rootCmd.Execute()
 }
 
-// Expose the registered metrics via HTTP
 func initServer(port string) {
 	endpoint := "/metrics"
 	log.Printf("Starting exorcist on port %s, endpoint: %s", port, endpoint)
@@ -115,7 +119,7 @@ func initServer(port string) {
 	log.Fatal(http.ListenAndServe(host, nil))
 }
 
-func invoke(metric string, command string, timer uint8) {
+func invoke(page string, metric string, command string, timer uint8) {
 	ritual := rituals.Ritual{Command: command, Timer: timer}
 	rituals.AddRitual(metric, ritual)
 }
