@@ -2,6 +2,7 @@ package rituals
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
@@ -12,6 +13,11 @@ const ConfigurationFile = "grimoire.json"
 
 // Grimoire struct
 type Grimoire struct {
+	Pages map[string]Page `json:"pages"`
+}
+
+// Page struct
+type Page struct {
 	Rituals map[string]Ritual `json:"rituals"`
 }
 
@@ -22,24 +28,33 @@ type Ritual struct {
 }
 
 // AddRitual public function
-func AddRitual(metric string, ritual Ritual) {
+func AddRitual(page string, metric string, ritual Ritual) {
 	grimoire := readGrimoire()
-	grimoire.Rituals[metric] = ritual
+	fmt.Println(grimoire)
+	if _, ok := grimoire.Pages[page]; !ok {
+		grimoire.Pages[page] = Page{}
+	}
+	if grimoire.Pages[page].Rituals == nil {
+		currentPage := grimoire.Pages[page]
+		currentPage.Rituals = make(map[string]Ritual)
+		grimoire.Pages[page] = currentPage
+	}
+	grimoire.Pages[page].Rituals[metric] = ritual
 	writeGrimoire(grimoire)
 }
 
 // RemoveRitual public function
 func RemoveRitual(metric string) {
-	grimoire := readGrimoire()
-	if _, exists := grimoire.Rituals[metric]; exists {
-		delete(grimoire.Rituals, metric)
-		writeGrimoire(grimoire)
-	}
+	// grimoire := readGrimoire()
+	// if _, exists := grimoire.Rituals[metric]; exists {
+	// 	delete(grimoire.Rituals, metric)
+	// 	writeGrimoire(grimoire)
+	// }
 }
 
 // ListRituals public functions
 func ListRituals() map[string]Ritual {
-	return readGrimoire().Rituals
+	return make(map[string]Ritual)
 }
 
 func readGrimoire() Grimoire {
@@ -63,8 +78,8 @@ func readGrimoire() Grimoire {
 		log.Fatal(err)
 	}
 
-	if grimoire.Rituals == nil {
-		grimoire.Rituals = make(map[string]Ritual)
+	if grimoire.Pages == nil {
+		grimoire.Pages = make(map[string]Page)
 	}
 
 	return grimoire

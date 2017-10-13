@@ -30,6 +30,11 @@ func main() {
 
 			initServer(port)
 		},
+		PersistentPreRun: func(cmd *cobra.Command, args []string) {
+			if page == "" {
+				log.Fatal("Metric page is mandatory")
+			}
+		},
 	}
 
 	cmdInvoke := &cobra.Command{
@@ -41,6 +46,9 @@ func main() {
 			invoke(page, name, command, *timer)
 		},
 		PersistentPreRun: func(cmd *cobra.Command, args []string) {
+			if page == "" {
+				log.Fatal("Metric page is mandatory")
+			}
 			if name == "" {
 				log.Fatal("Metric name is mandatory")
 			}
@@ -93,6 +101,7 @@ func main() {
 	cmdSummon.Flags().StringVarP(&page, "page", "", "", "choose a page")
 
 	cmdInvoke.Flags().StringVarP(&page, "page", "", "", "choose a page")
+	cmdInvoke.MarkPersistentFlagRequired("page")
 	cmdInvoke.Flags().StringVarP(&name, "name", "n", "", "give a name to invocation")
 	cmdInvoke.MarkPersistentFlagRequired("name")
 	cmdInvoke.Flags().StringVarP(&command, "command", "c", "", "command to execute")
@@ -121,5 +130,5 @@ func initServer(port string) {
 
 func invoke(page string, metric string, command string, timer uint8) {
 	ritual := rituals.Ritual{Command: command, Timer: timer}
-	rituals.AddRitual(metric, ritual)
+	rituals.AddRitual(page, metric, ritual)
 }
