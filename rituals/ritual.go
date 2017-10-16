@@ -44,17 +44,21 @@ func AddRitual(page string, metric string, ritual Ritual) {
 }
 
 // RemoveRitual public function
-func RemoveRitual(metric string) {
-	// grimoire := readGrimoire()
-	// if _, exists := grimoire.Rituals[metric]; exists {
-	// 	delete(grimoire.Rituals, metric)
-	// 	writeGrimoire(grimoire)
-	// }
+func RemoveRitual(page string, metric string) {
+	grimoire := readGrimoire()
+
+	if pg, existsPage := grimoire.Pages[page]; existsPage {
+		if _, existsRitual := pg.Rituals[metric]; existsRitual {
+			delete(pg.Rituals, metric)
+			writeGrimoire(grimoire)
+		}
+	}
 }
 
 // ListRituals public functions
-func ListRituals() map[string]Ritual {
-	return make(map[string]Ritual)
+func ListRituals(page string) map[string]Ritual {
+	grimoire := readGrimoire()
+	return grimoire.Pages[page].Rituals
 }
 
 func readGrimoire() Grimoire {

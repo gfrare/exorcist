@@ -26,7 +26,7 @@ func main() {
 		Long:  "Summon the exorcist",
 		Run: func(cmd *cobra.Command, args []string) {
 			log.Printf("Summon exorcist reading page \"%s\"", page)
-			go godEye.Watch()
+			go godEye.Watch(page)
 
 			initServer(port)
 		},
@@ -75,7 +75,7 @@ func main() {
 			table.SetColumnAlignment([]int{tablewriter.ALIGN_DEFAULT, tablewriter.ALIGN_DEFAULT,
 				tablewriter.ALIGN_RIGHT})
 
-			for metric, ritual := range rituals.ListRituals() {
+			for metric, ritual := range rituals.ListRituals("") { //TODO: fix the page argument
 				row := []string{metric, ritual.Command, strconv.Itoa(int(ritual.Timer))}
 				table.Append(row)
 			}

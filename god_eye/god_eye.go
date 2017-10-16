@@ -10,8 +10,8 @@ import (
 )
 
 // Watch public function
-func Watch() {
-	salms.InitAndExecuteMetrics()
+func Watch(page string) {
+	salms.InitAndExecuteMetrics(page)
 
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {
@@ -28,7 +28,7 @@ func Watch() {
 				if event.Op&fsnotify.Write == fsnotify.Write {
 					log.Println("Grimoire has been modified")
 
-					salms.InitAndExecuteMetrics()
+					salms.InitAndExecuteMetrics(page)
 				}
 			case err := <-watcher.Errors:
 				log.Fatal(err)

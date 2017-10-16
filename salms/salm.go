@@ -23,8 +23,8 @@ func init() {
 }
 
 // InitAndExecuteMetrics public function
-func InitAndExecuteMetrics() {
-	ritualsList := rituals.ListRituals()
+func InitAndExecuteMetrics(page string) {
+	ritualsList := rituals.ListRituals(page)
 
 	removableRituals := markRemovableRituals(ritualsList)
 	for metric, ritual := range removableRituals {
