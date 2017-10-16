@@ -112,15 +112,21 @@ func executeMetric(gauge prometheus.Gauge, metric string, ritual rituals.Ritual,
 	for run {
 		output, err := exec.Command("sh", "-c", ritual.Command).Output()
 		if err != nil {
-			log.Fatal(err)
+			log.Printf("Error while executing metric %s: %s", metric, err.Error())
+		} else {
+			value, err := strconv.ParseFloat(strings.TrimSpace(string(output[:])), 64)
+			if err != nil {
+				errMsg := err.Error()
+				colonIndex := strings.IndexByte(errMsg, ':')
+				if colonIndex != -1 {
+					errMsg = errMsg[:colonIndex]
+				}
+				log.Printf("Error while parsing result for metric %s: %s", metric, errMsg)
+			} else {
+				gauge.Set(value)
+				log.Printf("Ritual \"%s\", value: %f", metric, value)
+			}
 		}
-
-		value, err := strconv.ParseFloat(strings.TrimSpace(string(output[:])), 64)
-		if err != nil {
-			log.Fatal(err)
-		}
-		gauge.Set(value)
-		log.Printf("Ritual \"%s\", value: %f", metric, value)
 
 		select {
 		case <-slaughterChannel:
