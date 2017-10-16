@@ -61,6 +61,11 @@ func ListRituals(page string) map[string]Ritual {
 	return grimoire.Pages[page].Rituals
 }
 
+// GetGrimoire public functions
+func GetGrimoire() Grimoire {
+	return readGrimoire()
+}
+
 func readGrimoire() Grimoire {
 	// Check if the configuration file exists. If it doesn't create it
 	if _, err := os.Stat(ConfigurationFile); os.IsNotExist(err) {

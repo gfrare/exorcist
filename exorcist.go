@@ -64,21 +64,46 @@ func main() {
 		Long:  "Recite a salm",
 		Run: func(cmd *cobra.Command, args []string) {
 			table := tablewriter.NewWriter(os.Stdout)
-			table.SetHeader([]string{"Metric", "Command", "Timer"})
 			table.SetBorder(false)
-			table.SetHeaderColor(tablewriter.Color(tablewriter.FgRedColor),
-				tablewriter.Color(tablewriter.FgGreenColor),
-				tablewriter.Color(tablewriter.FgBlueColor))
-			table.SetColumnColor(tablewriter.Color(tablewriter.FgRedColor),
-				tablewriter.Color(tablewriter.FgGreenColor),
-				tablewriter.Color(tablewriter.FgBlueColor))
-			table.SetColumnAlignment([]int{tablewriter.ALIGN_DEFAULT, tablewriter.ALIGN_DEFAULT,
-				tablewriter.ALIGN_RIGHT})
 
-			for metric, ritual := range rituals.ListRituals("") { //TODO: fix the page argument
-				row := []string{metric, ritual.Command, strconv.Itoa(int(ritual.Timer))}
-				table.Append(row)
+			if page == "" {
+				table.SetHeader([]string{"Page", "Metric", "Command", "Timer"})
+				table.SetHeaderColor(tablewriter.Color(tablewriter.FgYellowColor),
+					tablewriter.Color(tablewriter.FgRedColor),
+					tablewriter.Color(tablewriter.FgGreenColor),
+					tablewriter.Color(tablewriter.FgBlueColor))
+				table.SetColumnColor(tablewriter.Color(tablewriter.FgYellowColor),
+					tablewriter.Color(tablewriter.FgRedColor),
+					tablewriter.Color(tablewriter.FgGreenColor),
+					tablewriter.Color(tablewriter.FgBlueColor))
+				table.SetColumnAlignment([]int{tablewriter.ALIGN_DEFAULT,
+					tablewriter.ALIGN_DEFAULT,
+					tablewriter.ALIGN_DEFAULT,
+					tablewriter.ALIGN_RIGHT})
+
+				for page, rituals := range rituals.GetGrimoire().Pages {
+					for metric, ritual := range rituals.Rituals {
+						row := []string{page, metric, ritual.Command, strconv.Itoa(int(ritual.Timer))}
+						table.Append(row)
+					}
+				}
+			} else {
+				table.SetHeader([]string{"Metric", "Command", "Timer"})
+				table.SetHeaderColor(tablewriter.Color(tablewriter.FgRedColor),
+					tablewriter.Color(tablewriter.FgGreenColor),
+					tablewriter.Color(tablewriter.FgBlueColor))
+				table.SetColumnColor(tablewriter.Color(tablewriter.FgRedColor),
+					tablewriter.Color(tablewriter.FgGreenColor),
+					tablewriter.Color(tablewriter.FgBlueColor))
+				table.SetColumnAlignment([]int{tablewriter.ALIGN_DEFAULT, tablewriter.ALIGN_DEFAULT,
+					tablewriter.ALIGN_RIGHT})
+
+				for metric, ritual := range rituals.ListRituals(page) {
+					row := []string{metric, ritual.Command, strconv.Itoa(int(ritual.Timer))}
+					table.Append(row)
+				}
 			}
+
 			table.Render()
 		},
 	}
@@ -102,6 +127,7 @@ func main() {
 	}
 
 	cmdSummon.Flags().StringVarP(&page, "page", "", "", "choose a page")
+	cmdSummon.Flags().StringVarP(&port, "port", "p", "8080", "give a port to exorcist")
 
 	cmdInvoke.Flags().StringVarP(&page, "page", "", "", "choose a page")
 	cmdInvoke.MarkPersistentFlagRequired("page")
@@ -111,10 +137,10 @@ func main() {
 	cmdInvoke.MarkPersistentFlagRequired("command")
 	timer = cmdInvoke.Flags().Uint8P("timer", "t", 5, "sleep between command execution")
 
-	cmdSummon.Flags().StringVarP(&port, "port", "p", "8080", "give a port to exorcist")
-
 	cmdBanish.Flags().StringVarP(&page, "page", "", "", "choose a page")
 	cmdBanish.Flags().StringVarP(&name, "name", "n", "", "choose a ritual")
+
+	cmdRecite.Flags().StringVarP(&page, "page", "", "", "choose a page")
 
 	rootCmd := &cobra.Command{Use: "exorcist"}
 	rootCmd.AddCommand(cmdSummon)
