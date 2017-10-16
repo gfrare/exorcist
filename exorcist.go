@@ -89,9 +89,12 @@ func main() {
 		Long:  "Banish a daemon",
 		Run: func(cmd *cobra.Command, args []string) {
 			log.Printf("Banishing ritual \"%s\"", name)
-			rituals.RemoveRitual(name)
+			rituals.RemoveRitual(page, name)
 		},
 		PersistentPreRun: func(cmd *cobra.Command, args []string) {
+			if page == "" {
+				log.Fatal("Metric page is mandatory")
+			}
 			if name == "" {
 				log.Fatal("Metric name is mandatory")
 			}
@@ -110,7 +113,8 @@ func main() {
 
 	cmdSummon.Flags().StringVarP(&port, "port", "p", "8080", "give a port to exorcist")
 
-	cmdBanish.Flags().StringVarP(&name, "name", "n", "", "give a name to invocation")
+	cmdBanish.Flags().StringVarP(&page, "page", "", "", "choose a page")
+	cmdBanish.Flags().StringVarP(&name, "name", "n", "", "choose a ritual")
 
 	rootCmd := &cobra.Command{Use: "exorcist"}
 	rootCmd.AddCommand(cmdSummon)
