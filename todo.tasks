@@ -5,7 +5,7 @@
 ✔ banish ritual from grimoure @done (October 12th 2017, 10:26)
 ✔ recite the list of rituals in grimoure @done (October 12th 2017, 10:26)
 ✔ use channel to send signal to kill gauce @done (October 12th 2017, 10:26)
-☐ Implement pages so that each exorcist only uses a part of the entire grimoire
+✔ Implement pages so that each exorcist only uses a part of the entire grimoire @done (10/16/2017, 11:34:52 AM)
 ☐ If the grimoire is missing log a fatal error
 	☐ Implement a flag to override the fatal error and create instead an empty grimoire
 	☐ The invocation command should always fail if the grimoire is missing
