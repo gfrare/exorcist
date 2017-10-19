@@ -96,7 +96,7 @@ func readGrimoire() Grimoire {
 
 func writeGrimoire(grimoire Grimoire) {
 	b, err := json.MarshalIndent(grimoire, "", "  ")
-	log.Printf("Grimoire: %s", string(b[:]))
+	log.Printf("New grimoire: %s", string(b[:]))
 	if err != nil {
 		log.Fatal(err)
 	}

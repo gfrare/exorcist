@@ -24,10 +24,8 @@ func Watch(page string) {
 		for {
 			select {
 			case event := <-watcher.Events:
-				log.Println("event", event)
 				if event.Op&fsnotify.Write == fsnotify.Write {
-					log.Println("Grimoire has been modified")
-
+					log.Println("Grimoire has been modified, reloading metrics")
 					salms.InitAndExecuteMetrics(page)
 				}
 			case err := <-watcher.Errors:

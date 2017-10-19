@@ -113,7 +113,7 @@ func main() {
 		Short: "Banish a daemon",
 		Long:  "Banish a daemon",
 		Run: func(cmd *cobra.Command, args []string) {
-			log.Printf("Banishing ritual \"%s\"", name)
+			log.Printf("Banishing ritual \"%s\" from page \"%s\"", name, page)
 			rituals.RemoveRitual(page, name)
 		},
 		PersistentPreRun: func(cmd *cobra.Command, args []string) {

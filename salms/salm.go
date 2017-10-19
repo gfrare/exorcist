@@ -124,7 +124,6 @@ func executeMetric(gauge prometheus.Gauge, metric string, ritual rituals.Ritual,
 				log.Printf("Error while parsing result for metric %s: %s", metric, errMsg)
 			} else {
 				gauge.Set(value)
-				log.Printf("Ritual \"%s\", value: %f", metric, value)
 			}
 		}
 
